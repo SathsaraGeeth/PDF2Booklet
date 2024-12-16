@@ -1,2 +1,2 @@
 # PDF2Booklet
-A simple generating booklet for printing
+A simple software that generate booklet for printing
