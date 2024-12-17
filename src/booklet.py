@@ -5,6 +5,8 @@ from PyPDF2.generic import RectangleObject
 import io
 import os
 import copy
+import compress as cmp
+import subprocess
 
 class Booklet:
     """A class to generate booklet."""
@@ -63,6 +65,7 @@ class Booklet:
 
     def convert_to_type1(self):
         """ Convert to Type1 booklet: Each sheet itself is a booklet (4 pages per sheet). """
+        print("Starting conversion...")
         self.pdf_writer = PdfWriter()
         num_pages = self.no_pages
         pages = self.pdf_reader.pages
@@ -82,6 +85,7 @@ class Booklet:
     # todo2: check whether if this produce the desired booklet type
     def convert_to_type2(self):
         """ Convert to Type2 booklet: The entire set of sheets forms a single booklet(4 pages per sheet). """
+        print("Starting conversion...")
         self.pdf_writer = PdfWriter()
         num_pages = self.no_pages
         pages = self.pdf_reader.pages
@@ -104,15 +108,28 @@ class Booklet:
 
         print("Successfully converted to Type2 booklet.")
 
-    def output(self):
-        """ Returns the created PDF as a memory file. """
+    def save(self, file_name = None, file_path = None):
+        """ Saves the PDF. """
         try:
-            # Create a BytesIO object to hold the output PDF in memory
-            memory_file = io.BytesIO()
-            self.pdf_writer.write(memory_file)
+            if file_name is None:
+                base, ext = os.path.splitext(self.input_path)
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                file_name = f"{os.path.basename(base)}_booklet_{timestamp}{ext}"
 
-            # Seek to the beginning of the file before returning it
-            memory_file.seek(0)
-            return memory_file
+            if file_path is None:
+                file_path = os.getcwd()
+
+            full_path = os.path.join(file_path, file_name)
+            temp_output_path = full_path + "_temp.pdf"
+
+            # Save the booklet temporarily
+            with open(temp_output_path, "wb") as out_file:
+                self.pdf_writer.write(out_file)
+
+            # Compress
+            cmp.compress(temp_output_path, full_path)
+            os.remove(temp_output_path)
+
+            print(f"Successfully saved file to {full_path}")
         except Exception as e:
-            raise Exception(f"An error occurred while generating the memory file: {str(e)}")
+            raise Exception(f"An error occurred while saving the file: {str(e)}")
