@@ -111,21 +111,34 @@ class Booklet:
 
         print("Successfully converted to Type2 booklet.")
 
-    def save(self, file_name=None, file_path=None):
-        """Saves the PDF."""
-        if file_name is None:
-            base, ext = os.path.splitext(self.input_path)
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            file_name = f"{os.path.basename(base)}_booklet_{timestamp}{ext}"
-
-        if file_path is None:
-            file_path = os.getcwd()
-
-        full_path = os.path.join(file_path, file_name)
-
+    def output(self):
+        """ Returns the created PDF as a memory file. """
         try:
-            with open(full_path, "wb") as out_file:
-                self.pdf_writer.write(out_file)
-            print(f"Successfully saved file to {full_path}")
+            # Create a BytesIO object to hold the output PDF in memory
+            memory_file = io.BytesIO()
+            self.pdf_writer.write(memory_file)
+
+            # Seek to the beginning of the file before returning it
+            memory_file.seek(0)
+            return memory_file
         except Exception as e:
-            raise Exception(f"An error occurred while saving the file: {str(e)}")
+            raise Exception(f"An error occurred while generating the memory file: {str(e)}")
+
+    # def save(self, file_name=None, file_path=None):
+    #     """Saves the PDF."""
+    #     if file_name is None:
+    #         base, ext = os.path.splitext(self.input_path)
+    #         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    #         file_name = f"{os.path.basename(base)}_booklet_{timestamp}{ext}"
+
+    #     if file_path is None:
+    #         file_path = os.getcwd()
+
+    #     full_path = os.path.join(file_path, file_name)
+
+    #     try:
+    #         with open(full_path, "wb") as out_file:
+    #             self.pdf_writer.write(out_file)
+    #         print(f"Successfully saved file to {full_path}")
+    #     except Exception as e:
+    #         raise Exception(f"An error occurred while saving the file: {str(e)}")
