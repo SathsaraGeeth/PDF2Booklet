@@ -16,6 +16,9 @@ class Booklet:
                 file_content = file.read()
             self.pdf_reader = PdfReader(io.BytesIO(file_content))  # Reader object
             self.pdf_writer = PdfWriter()  # Writer object
+
+            self.page_size = tuple(map(float, (self.pdf_reader.pages[0].mediabox.width, self.pdf_reader.pages[0].mediabox.height)))
+            
             print("File loaded successfully.")
         except Exception as e:
             raise Exception(f"An error occurred while loading the file: {str(e)}")
@@ -24,11 +27,6 @@ class Booklet:
     def no_pages(self):
         """Returns the total number of pages."""
         return len(self.pdf_reader.pages)
-
-    @property
-    def page_size(self):
-        """Returns the size of pages assuming constant size through the PDF."""
-        return tuple(map(float, (self.pdf_reader.pages[0].mediabox.width, self.pdf_reader.pages[0].mediabox.height)))
 
     def blank_page(self):
         """Returns a fresh blank page."""
@@ -47,10 +45,6 @@ class Booklet:
         width, height = self.page_size
         ret_page = self.blank_booklet_page()
 
-        # Copy pages to avoid mutability issues <- this is crucial otherwise the scaling will be wrong # todo3: find out why and think of a workaround
-        left_page = copy.deepcopy(left_page)
-        right_page = copy.deepcopy(right_page)
-
         # Transformations
         tx_l, ty_l = (0.0 - inner_margin, 0.0)
         tx_r, ty_r = (height/2 + inner_margin, 0.0)
@@ -66,7 +60,6 @@ class Booklet:
         ret_page.merge_page(left_page)
         ret_page.merge_page(right_page)
         return ret_page
-
 
     def convert_to_type1(self):
         """ Convert to Type1 booklet: Each sheet itself is a booklet (4 pages per sheet). """
@@ -123,22 +116,3 @@ class Booklet:
             return memory_file
         except Exception as e:
             raise Exception(f"An error occurred while generating the memory file: {str(e)}")
-
-    # def save(self, file_name=None, file_path=None):
-    #     """Saves the PDF."""
-    #     if file_name is None:
-    #         base, ext = os.path.splitext(self.input_path)
-    #         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    #         file_name = f"{os.path.basename(base)}_booklet_{timestamp}{ext}"
-
-    #     if file_path is None:
-    #         file_path = os.getcwd()
-
-    #     full_path = os.path.join(file_path, file_name)
-
-    #     try:
-    #         with open(full_path, "wb") as out_file:
-    #             self.pdf_writer.write(out_file)
-    #         print(f"Successfully saved file to {full_path}")
-    #     except Exception as e:
-    #         raise Exception(f"An error occurred while saving the file: {str(e)}")
