@@ -41,7 +41,7 @@ class Booklet:
     def merge_pages(self, left_page, right_page, inner_margin = 0, scale = None):
         """Merge two pages into one page, returns it."""
         if not scale:
-            scale = 0.75 # min((height / 2 - inner_margin) / height, (width - inner_margin) / width)   # todo1: fix this formula for optimal scaling factor
+            scale = 0.7 # min((height / 2 - inner_margin) / height, (width - inner_margin) / width)   # todo1: fix this formula for optimal scaling factor
         width, height = self.page_size
         ret_page = self.blank_booklet_page()
 
@@ -52,8 +52,8 @@ class Booklet:
         transformation_left = Transformation().scale(scale).translate(tx_l, ty_l)
         transformation_right = Transformation().scale(scale).translate(tx_r, ty_r)
 
-        left_page.mediabox = RectangleObject([tx_l, ty_l, height, width])
-        right_page.mediabox = RectangleObject([tx_r, ty_r, height, width])
+        left_page.mediabox = RectangleObject([0.0, 0.0, 0.0 + height / 2, 0.0 + width])
+        right_page.mediabox = RectangleObject([height / 2, 0.0, height, width])
         left_page.add_transformation(transformation_left)
         right_page.add_transformation(transformation_right)
 
