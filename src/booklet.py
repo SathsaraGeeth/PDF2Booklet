@@ -47,7 +47,7 @@ class Booklet:
         width, height = self.page_size
         ret_page = self.blank_booklet_page()
 
-        # Copy pages to avoid mutability issues <- this is crucial otherwise the scaling will be wrong #todo3: find out why and think of a workaround
+        # Copy pages to avoid mutability issues <- this is crucial otherwise the scaling will be wrong # todo3: find out why and think of a workaround
         left_page = copy.deepcopy(left_page)
         right_page = copy.deepcopy(right_page)
 
