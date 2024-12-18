@@ -114,7 +114,7 @@ class Booklet:
     def save(self, file_name = None, file_path = None):
         """ Saves the PDF. """
         try:
-            print("Saving to thr\e diskk...")
+            print("Saving to the disk...")
             if file_name is None:
                 base, ext = os.path.splitext(self.input_path)
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
