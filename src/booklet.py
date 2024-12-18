@@ -8,9 +8,10 @@ import copy
 import compress as cmp
 import subprocess
 
+# todo1: find a fix to prevent the content of the right page from becoming invisible 
+# when encountered with pdf with improperly configured page sizes
 class Booklet:
-    """A class to generate booklet."""
-
+    """ A class to generate booklet. """
     def __init__(self, file_path):
         try:
             self.input_path = file_path
@@ -27,24 +28,24 @@ class Booklet:
 
     @property
     def no_pages(self):
-        """Returns the total number of pages."""
+        """ Returns the total number of pages. """
         return len(self.pdf_reader.pages)
 
     def blank_page(self):
-        """Returns a fresh blank page."""
+        """ Returns a blank page. """
         width, height = self.page_size
         return PageObject.create_blank_page(None, width, height)
 
     def blank_booklet_page(self):
-        """Returns a fresh blank booklet page."""
+        """ Returns a fresh blank booklet page. """
         width, height = self.page_size
         return PageObject.create_blank_page(None, height, width)
 
     def merge_pages(self, left_page, right_page, inner_margin = 0, scale = None):
-        """Merge two pages into one page, returns it."""
-        if not scale:
-            scale = 0.7 # min((height / 2 - inner_margin) / height, (width - inner_margin) / width)   # todo1: fix this formula for optimal scaling factor
+        """ Merge two pages into one page, returns it. """
         width, height = self.page_size
+        if not scale:
+            scale = min((width/height), ((height * 0.5 / width) - inner_margin / width))
         ret_page = self.blank_booklet_page()
 
         # Transformations
@@ -54,10 +55,12 @@ class Booklet:
         transformation_left = Transformation().scale(scale).translate(tx_l, ty_l)
         transformation_right = Transformation().scale(scale).translate(tx_r, ty_r)
 
-        left_page.mediabox = RectangleObject([0.0, 0.0, 0.0 + height / 2, 0.0 + width])
-        right_page.mediabox = RectangleObject([height / 2, 0.0, height, width])
+        
         left_page.add_transformation(transformation_left)
         right_page.add_transformation(transformation_right)
+
+        left_page.mediabox = RectangleObject([0.0, 0.0, 0.0 + height / 2 - inner_margin, 0.0 + width])
+        right_page.mediabox = RectangleObject([height / 2 + inner_margin, 0.0, height, width])
 
         ret_page.merge_page(left_page)
         ret_page.merge_page(right_page)
@@ -111,6 +114,7 @@ class Booklet:
     def save(self, file_name = None, file_path = None):
         """ Saves the PDF. """
         try:
+            print("Saving to thr\e diskk...")
             if file_name is None:
                 base, ext = os.path.splitext(self.input_path)
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
