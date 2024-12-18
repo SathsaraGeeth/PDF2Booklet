@@ -101,7 +101,7 @@ To install the required dependencies, follow these steps based on your operating
    - First, clone the repository to your local machine:
      ```bash
      git clone https://github.com/SathsaraGeeth/PDF2Booklet.git
-     cd PDF2Booklet
+     cd PDF2Booklet/src
      ```
 
 2. **Run the application**:
