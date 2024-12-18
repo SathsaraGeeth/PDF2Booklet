@@ -5,14 +5,14 @@ import subprocess
 import sys
 
 def compress(input_file_path, output_file_path, level = 1):
-  """
-  Compression levels:
-    0: default - almost identical to /screen, 72 dpi images
-    1: prepress - high quality, color preserving, 300 dpi imgs
-    2: printer - high quality, 300 dpi images
-    3: ebook - low quality, 150 dpi images
-    4: screen - screen-view-only quality, 72 dpi images
-  """
+    """
+    Compression levels:
+      0: default - almost identical to /screen, 72 dpi images
+      1: prepress - high quality, color preserving, 300 dpi imgs
+      2: printer - high quality, 300 dpi images
+      3: ebook - low quality, 150 dpi images
+      4: screen - screen-view-only quality, 72 dpi images
+    """
     quality = {0: "/default", 1: "/prepress", 2: "/printer", 3: "/ebook", 4: "/screen"}
     gs = get_ghostscript_path()
     print("Start compressing...")
